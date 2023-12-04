@@ -14,6 +14,7 @@ mongoose.connect(process.env.MONGO)
 
 const app = express();
 app.use(express.json());
+
 app.use(cookieParser());
 
 app.use('/api/user', userRouter);

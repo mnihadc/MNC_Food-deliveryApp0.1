@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './Components/Header';
 import PrivateRoute from './Components/PrivateRoute';
@@ -12,22 +11,20 @@ import SignUp from './Pages/SignUp';
 
 function App() {
 
-  return (
-    <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/sign-up' element={<SignUp />} />
-        <Route path='/sign-in' element={<SignIn />} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/order' element={<Order />} />
-        <Route path='/about' element={<About />} />
-        <Route element={<PrivateRoute />}>
-          <Route path='/profile' element={<Profile />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  )
+  return <BrowserRouter>
+    <Header />
+    <Routes>
+      <Route path='/' element={<Home />} />
+      <Route path='/sign-up' element={<SignUp />} />
+      <Route path='/sign-in' element={<SignIn />} />
+      <Route path='/cart' element={<Cart />} />
+      <Route path='/order' element={<Order />} />
+      <Route path='/about' element={<About />} />
+      <Route element={<PrivateRoute />}>
+        <Route path='/profile' element={<Profile />} />
+      </Route>
+    </Routes>
+  </BrowserRouter>
 }
 
 export default App
