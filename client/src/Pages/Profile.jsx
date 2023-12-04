@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 
 import {
   updateUserStart, updateUserSuccess, updateUserFailure,
-  deleteUserStart, deleteUserSuccess, deleteUserFailure
+  deleteUserStart, deleteUserSuccess, deleteUserFailure,
+  signoutUserStart, signoutUserSuccess, signoutUserFailure
 } from '../redux/user/userSlice.js'
 
 /*firebase rules
@@ -25,9 +26,9 @@ function Profile() {
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
@@ -90,9 +91,22 @@ function Profile() {
         return;
       }
       dispatch(deleteUserSuccess(data));
-      navigate('/sign-in')
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+    }
+  }
+  const handleSignOut = async () => {
+    try {
+      dispatch(signoutUserStart());
+      const res = await fetch('api/auth/signout');
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(signoutUserFailure(data.message));
+        return;
+      }
+      dispatch(signoutUserSuccess(data));
+    } catch (error) {
+      dispatch(signoutUserFailure(error.message));
     }
   }
   return (
@@ -122,7 +136,7 @@ function Profile() {
       </form>
       <div className='flex justify-between mt-5'>
         <span onClick={handleDeleteUser} className='text-red-600 cursor-pointer'>Delete Account</span>
-        <span className='text-red-600 cursor-pointer'>Sign-Out</span>
+        <span onClick={handleSignOut} className='text-red-600 cursor-pointer'>Sign-Out</span>
       </div>
       <p className='text-red-600 mt-5'>{error ? error : ''}</p>
       <p className='text-green-600 mt-5'>{updateSuccess ? 'User updated successfully' : ''}</p>
