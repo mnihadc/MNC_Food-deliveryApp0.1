@@ -24,16 +24,23 @@ function Header() {
                             Home
                         </li>
                     </Link>
-                    <Link to='/cart'>
-                        <li className='hidden sm:inline  hover:underline'>
-                            Cart
-                        </li>
-                    </Link>
-                    <Link to='/order'>
-                        <li className='hidden sm:inline  hover:underline'>
-                            Order
-                        </li>
-                    </Link>
+
+                    {currentUser && (
+                        <>
+                            <Link to='/cart'>
+                                <li className='hidden sm:inline hover:underline'>
+                                    Cart
+                                </li>
+                            </Link>
+                            <Link to='/order'>
+                                <li className='hidden sm:inline hover:underline'>
+                                    Order
+                                </li>
+                            </Link>
+                        </>
+                    )}
+
+
                     <Link to='/about'>
                         <li className='hidden sm:inline  hover:underline'>
                             About
