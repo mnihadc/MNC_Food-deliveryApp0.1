@@ -24,8 +24,7 @@ function Home() {
       const responseData = await response.json();
       setFoodItem(responseData.foodItems);
       setFoodCat(responseData.foodCategory);
-      console.log(responseData.foodItems);
-      console.log(responseData.foodCategory);
+
     } catch (error) {
       console.error('Error fetching data:', error);
     }
