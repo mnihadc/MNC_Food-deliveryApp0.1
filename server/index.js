@@ -13,8 +13,6 @@ dotenv.config();
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
 }).then(async () => {
     console.log('Connected to MongoDB!');
 
@@ -38,7 +36,7 @@ mongoose.connect(process.env.MONGO, {
     app.use(cookieParser());
     app.use('/api/user', userRouter);
     app.use('/api/auth', authRouter);
-    app.use('/api/listing', listingRouter); // Fixed the missing '/' at the beginning
+    app.use('/api/listing', listingRouter);
 
     app.listen(3000, () => {
         console.log("Server is running on port 3000!");
