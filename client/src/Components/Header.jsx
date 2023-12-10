@@ -1,13 +1,16 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux';
+import Badge from 'react-bootstrap/Badge';
 
 import ShortPage from '../../shortPage';
 import Cart from '../Pages/Cart';
+import { useCart } from './CartProvider';
 
 function Header() {
     const { currentUser } = useSelector((state) => state.user)
     const [cartView, setCartView] = useState();
+    let Cartdata =useCart();
     return (
         <header className='bg-green-600 shadow-md'>
             <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
@@ -30,8 +33,9 @@ function Header() {
                     {currentUser && (
                         <>
 
-                            <div className='text-white mx-2' onClick={() => { setCartView(true) }}>
+                            <div className='hidden sm:inline hover:underline' onClick={() => { setCartView(true) }}>
                                 My Cart {""}
+                                <Badge pill bg="danger" >{Cartdata.length}</Badge>
                             </div>
                             {cartView ? <ShortPage onClose={() => setCartView(false)}><Cart /></ShortPage> : null}
 

@@ -5,9 +5,15 @@ import { useCart, useDispatchCart } from '../Components/CartProvider';
 function Cart() {
   let Cartdata = useCart();
   let dispatch = useDispatchCart();
+  if (Cartdata.length === 0) {
+    return (
+      <div>
+        <div className='m-5 w-100 text-center fs-3'>The Cart is Empty!</div>
+      </div>
+    )
+  }
 
-
-  
+  let totalPrice = Cartdata.reduce((total, item) => total + item.price, 0)
 
   return (
     <div>
@@ -35,7 +41,7 @@ function Cart() {
             ))}
           </tbody>
         </table>
-        <div><h1 className='fs-2'>Total Price:25531465/-</h1></div>
+        <div><h1 className='fs-2'>Total Price:{totalPrice}/-</h1></div>
         <div>
           <button className='btn bg-success mt-5' >Check Out</button>
         </div>

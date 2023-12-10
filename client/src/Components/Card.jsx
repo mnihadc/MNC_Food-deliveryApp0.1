@@ -1,13 +1,40 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatchCart, useCart } from './CartProvider';
 
 function Card(props) {
-
+    let dispatch = useDispatchCart()
+    let Cartdata = useCart();
     const priceRef = useRef();
     let options = props.options;
     let priceOptions = Object.keys(options);
     const [qty, setQty] = useState(1)
     const [size, setSize] = useState("")
 
+    const handleAddToCart = async () => {
+        let food = []
+        for (const item of Cartdata) {
+            if (item.id === props.foodItem._id) {
+                food = item;
+                break;
+            }
+        }
+        if (food.length > 0) {
+            if (food.size === size) {
+                await dispatch({ type: "UPDATE", id: props.foodItem._id, price: finalPrice, qty: qty })
+                return
+            }
+            else if (food.size !== size) {
+                await dispatch({ type: "ADD", id: props.foodItem._id, name: props.foodItem.name, price: finalPrice, qty: qty, size: size })
+                return
+            }
+            return
+        }
+        await dispatch({ type: "ADD", id: props.foodItem._id, name: props.foodItem.name, price: finalPrice, qty: qty, size: size })
+    }
+    let finalPrice = qty * parseInt(options[size]);
+    useEffect(() => {
+        setSize(priceRef.current.value)
+    }, [])
     return (
         <div>
             <div>
@@ -32,12 +59,12 @@ function Card(props) {
                             </select>
 
                             <div className='d-inline h-100 fs-5'>
-                                545464
+                                ₹{finalPrice}/-
                             </div>
                         </div>
                         <hr>
                         </hr>
-                        <button className={`btn btn-success justify-center ms-2`} >Add to cart</button>
+                        <button className={`btn btn-success justify-center ms-2`} onClick={handleAddToCart} >Add to cart</button>
                     </div>
                 </div>
             </div>
