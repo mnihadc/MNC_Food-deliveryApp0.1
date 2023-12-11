@@ -13,6 +13,23 @@ function Cart() {
     )
   }
 
+  const handleCheckout = async () => {
+    let userEmail = localStorage.getItem("userEmail");
+    let response = await fetch("/api/listing/orderData", {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        order_data: Cartdata,
+        email: userEmail,
+        order_date: new Date().toDateString()
+      })
+    })
+    if (response.status === 200) {
+      dispatch({ type: "DROP" })
+    }
+  }
   let totalPrice = Cartdata.reduce((total, item) => total + item.price, 0)
 
   return (
@@ -43,7 +60,7 @@ function Cart() {
         </table>
         <div><h1 className='fs-2'>Total Price:{totalPrice}/-</h1></div>
         <div>
-          <button className='btn bg-success mt-5' >Check Out</button>
+          <button className='btn bg-success mt-5' onClick={handleCheckout} >Check Out</button>
         </div>
       </div>
     </div>
