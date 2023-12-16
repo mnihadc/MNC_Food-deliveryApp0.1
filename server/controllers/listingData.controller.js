@@ -30,9 +30,7 @@ export const foodOrderData = async (req, res, next) => {
             next(error)
         }
     }
-    if (!req.body.email) {
-        throw new Error("Email is required");
-      }
+   
     else {
         try {
             await order.findOneAndUpdate({ email: req.body.email },
@@ -45,5 +43,14 @@ export const foodOrderData = async (req, res, next) => {
             next(error);
         }
     }
+}
 
+export const userOrderData = async (req, res, next) => {
+    try {
+        let myData = await order.findOne({ 'email': req.body.email })
+        res.json({ orderData: myData })
+    } catch (error) {
+        res.send("Server Error", error.message)
+        next(error)
+    }
 }
