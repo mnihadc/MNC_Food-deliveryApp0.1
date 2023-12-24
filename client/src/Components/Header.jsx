@@ -10,9 +10,9 @@ import { useCart } from './CartProvider';
 function Header() {
     const { currentUser } = useSelector((state) => state.user)
     const [cartView, setCartView] = useState();
-    let Cartdata =useCart();
+    let Cartdata = useCart();
     return (
-        <header className='bg-green-600 shadow-md'>
+        <header className='bg-green-600 shadow-md relative z-10'>
             <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
                 <Link to='/'>
                     <h1 className='font-bold text-sm:text-xl flex flex-wrap text-lg'>
@@ -31,6 +31,19 @@ function Header() {
                     </Link>
 
                     {currentUser && (
+                        <div className='fixed bottom-0 left-0 w-full bg-green-600 p-2 sm:hidden'>
+                            <div className='flex justify-around items-center'>
+                                <div onClick={() => { setCartView(true) }} className='text-white hover:underline'>
+                                    My Cart {""}
+                                    <Badge pill bg="danger" >{Cartdata.length}</Badge>
+                                </div>
+                                <Link to='/order' className='text-white hover:underline'>
+                                    Order
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                    {currentUser && (
                         <>
 
                             <div className='hidden sm:inline hover:underline' onClick={() => { setCartView(true) }}>
@@ -46,7 +59,6 @@ function Header() {
                             </Link>
                         </>
                     )}
-
 
                     <Link to='/about'>
                         <li className='hidden sm:inline  hover:underline'>
