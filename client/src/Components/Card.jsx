@@ -18,18 +18,18 @@ function Card(props) {
                 break;
             }
         }
-        if (food.length > 0) {
+        if (food !== []) {
             if (food.size === size) {
                 await dispatch({ type: "UPDATE", id: props.foodItem._id, price: finalPrice, qty: qty })
                 return
             }
             else if (food.size !== size) {
-                await dispatch({ type: "ADD", id: props.foodItem._id, name: props.foodItem.name, price: finalPrice, qty: qty, size: size })
+                await dispatch({ type: "ADD", id: props.foodItem._id, name: props.foodItem.name,img: props.foodItem.img, price: finalPrice, qty: qty, size: size })
                 return
             }
             return
         }
-        await dispatch({ type: "ADD", id: props.foodItem._id, name: props.foodItem.name, price: finalPrice, qty: qty, size: size })
+        await dispatch({ type: "ADD", id: props.foodItem._id, name: props.foodItem.name, img: props.foodItem.img, price: finalPrice, qty: qty, size: size })
     }
     let finalPrice = qty * parseInt(options[size]);
     useEffect(() => {
