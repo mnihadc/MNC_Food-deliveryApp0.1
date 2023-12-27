@@ -29,7 +29,6 @@ function Order() {
     const currentDate = new Date();
     const orderDateTime = new Date(orderDate);
 
-
     orderDateTime.setHours(orderDateTime.getHours() + 1, orderDateTime.getMinutes() + 30);
 
     return orderDateTime > currentDate;
@@ -40,8 +39,8 @@ function Order() {
       <div className='container'>
 
         <div className='text-center'>
-          {Object.keys(orderData).length !== 0 ? (
-            orderData.orderData.order_data?.length > 0 ? (
+          {orderData && Object.keys(orderData).length !== 0 ? (
+            orderData.orderData && orderData.orderData.order_data?.length > 0 ? (
               <>
                 {orderData.orderData.order_data?.reverse().map(data => (
                   data.map((arrayData) => (
@@ -79,9 +78,11 @@ function Order() {
                 ))}
               </>
             ) : (
-              <h2>No new orders</h2>
+              <h2 className='text-3xl font-semibold p-3'>No orders availables</h2>
             )
-          ) : ""}
+          ) : (
+            <h2>No orders available</h2>
+          )}
         </div>
 
       </div>

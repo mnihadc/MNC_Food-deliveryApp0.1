@@ -57,6 +57,7 @@ function Profile() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -129,7 +130,7 @@ function Profile() {
                 ""
               )}
         </p>
-        <input defaultValue={currentUser.username} type="text" placeholder='username' className='border p-3 rounded-lg' id='username' onChange={handleChange} />
+        <input value={formData.username || currentUser.username} type="text" placeholder='username' className='border p-3 rounded-lg' id='username' onChange={handleChange} />
         <input defaultValue={currentUser.email} type="email" placeholder='email' className='border p-3 rounded-lg' id='email' onChange={handleChange} />
         <input type="password" placeholder='password' className='border p-3 rounded-lg' id='password' onChange={handleChange} />
         <button disabled={loading} className='bg-green-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Loading...' : 'Update                                                                                     '}</button>

@@ -1,4 +1,6 @@
 import order from "../models/order.model.js";
+import jwt from 'jsonwebtoken';
+import { handleError } from '../untils/error.js';
 
 export const listingFoodData = (req, res, next) => {
     try {
@@ -8,49 +10,78 @@ export const listingFoodData = (req, res, next) => {
         });
     } catch (error) {
         next(error);
-        res.send("Server Error")
+        res.status(500).send("Server Error");
     }
 }
-
 export const foodOrderData = async (req, res, next) => {
-    let data = req.body.order_data
-    await data.splice(0, 0, { order_date: req.body.order_date })
+    try {
+        const orderData = req.body.order_data;
+        const orderDate = req.body.order_date;
 
-    let eId = await order.findOne({ 'email': req.body.email })
-    console.log(eId)
-    if (eId === null) {
-        try {
-            await order.create({
-                email: req.body.email,
-                order_data: [data]
-            })
-        } catch (error) {
-            console.log(error.message)
-            res.send("Server Error", error.message);
-            next(error)
-        }
-    }
-   
-    else {
-        try {
-            await order.findOneAndUpdate({ email: req.body.email },
-                { $push: { order_data: data } }).then(() => {
-                    res.json({ success: true })
-                })
+        orderData.unshift({ order_date: orderDate });
 
-        } catch (error) {
-            res.send("Server Error", error.message)
-            next(error);
+        const token = req.cookies.access_token;
+        if (!token) {
+            return next(handleError(401, 'Unauthorized. Access token not found.'));
         }
+
+        jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+            if (err) {
+                return next(handleError(401, 'Unauthorized. Invalid access token.'));
+            }            
+
+            const userEmail = user.email;
+
+            
+            const existingOrder = await order.findOne({ email: userEmail });
+
+            if (existingOrder) {
+                
+                await order.findOneAndUpdate(
+                    { email: userEmail },
+                    { $push: { order_data: orderData } }
+                );
+            } else {
+                
+                const newOrder = new order({ email: userEmail, order_data: [orderData] });
+                await newOrder.save();
+            }
+
+            res.json({ success: true });
+        });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+        next(error);
     }
 }
+
+
 
 export const userOrderData = async (req, res, next) => {
     try {
-        let myData = await order.findOne({ 'email': req.body.email })
-        res.json({ orderData: myData })
+        const token = req.cookies.access_token;
+        if (!token) {
+            return next(handleError(401, 'Unauthorized. Access token not found.'));
+        }
+
+        jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+            if (err) {
+                return next(handleError(401, 'Unauthorized. Invalid access token.'));
+            }
+
+            
+            const userFromToken = user;
+
+            
+            const myData = await order.findOne({ 'email': userFromToken.email });
+
+            res.json({ orderData: myData });
+        });
     } catch (error) {
-        res.send("Server Error", error.message)
-        next(error)
+        console.error(error.message);
+        res.status(500).send("Server Error");
+        next(error);
     }
 }
