@@ -21,6 +21,7 @@ export const foodOrderData = async (req, res, next) => {
         orderData.unshift({ order_date: orderDate });
 
         const token = req.cookies.access_token;
+
         if (!token) {
             return next(handleError(401, 'Unauthorized. Access token not found.'));
         }
@@ -28,21 +29,18 @@ export const foodOrderData = async (req, res, next) => {
         jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
             if (err) {
                 return next(handleError(401, 'Unauthorized. Invalid access token.'));
-            }            
+            }
 
             const userEmail = user.email;
 
-            
             const existingOrder = await order.findOne({ email: userEmail });
 
             if (existingOrder) {
-                
                 await order.findOneAndUpdate(
                     { email: userEmail },
                     { $push: { order_data: orderData } }
                 );
             } else {
-                
                 const newOrder = new order({ email: userEmail, order_data: [orderData] });
                 await newOrder.save();
             }
@@ -58,7 +56,6 @@ export const foodOrderData = async (req, res, next) => {
 }
 
 
-
 export const userOrderData = async (req, res, next) => {
     try {
         const token = req.cookies.access_token;
@@ -71,10 +68,10 @@ export const userOrderData = async (req, res, next) => {
                 return next(handleError(401, 'Unauthorized. Invalid access token.'));
             }
 
-            
+
             const userFromToken = user;
 
-            
+
             const myData = await order.findOne({ 'email': userFromToken.email });
 
             res.json({ orderData: myData });

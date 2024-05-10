@@ -34,8 +34,6 @@ const handleSubmit = async (e) => {
       dispatch(signInFailure(data.message));
       return;
     }
-    
-    localStorage.setItem('userEmail', data.email);
     dispatch(signInSuccess(data));
     navigate('/');
   } catch (error) {

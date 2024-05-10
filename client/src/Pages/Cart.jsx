@@ -13,34 +13,37 @@ function Cart() {
       </div>
     )
   }
+
+
   const handleCheckout = async () => {
     let userEmail = localStorage.getItem("userEmail");
+    let accessToken = Cookies.get('access_token');
 
-    console.log("Retrieved userEmail from localStorage:", userEmail);
-
-    
-    if (!userEmail) {
-      console.error("User email is null or undefined.");
-      return;  
+    if (!userEmail || !accessToken) {
+      console.error("User email or access token is null or undefined.");
+      return;
     }
-
+  
     let orderDateTime = new Date().toLocaleString();
     let response = await fetch("/api/listing/orderData", {
       method: 'post',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+        'User-Email': userEmail,
       },
       body: JSON.stringify({
         order_data: Cartdata,
         email: userEmail,
-        order_date: orderDateTime
-      })
+        order_date: orderDateTime,
+      }),
     });
-
+  
     if (response.status === 200) {
       dispatch({ type: "DROP" });
     }
-  }
+  };
+  
 
   let totalPrice = Cartdata.reduce((total, item) => total + item.price, 0)
 
