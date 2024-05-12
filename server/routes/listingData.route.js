@@ -1,11 +1,11 @@
 import express from 'express';
 import { foodOrderData, listingFoodData, userOrderData } from '../controllers/listingData.controller.js';
-import { verifyToken } from '../untils/verifyUser.js';
+
 
 const router = express.Router();
 
 router.post('/foodData', listingFoodData);
-router.post('/orderData', verifyToken, foodOrderData);
-router.post('/userOrder', verifyToken, userOrderData);
+router.post('/orderData', foodOrderData);
+router.get('/userOrder/:id', userOrderData);
 
 export default router;

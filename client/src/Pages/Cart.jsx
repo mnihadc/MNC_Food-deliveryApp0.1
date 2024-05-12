@@ -1,51 +1,49 @@
-import React from 'react'
-import { FaTrashAlt } from 'react-icons/fa/index';
-
+import React, { useState } from 'react';
+import { FaTrashAlt } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 import { useCart, useDispatchCart } from '../Components/CartProvider';
+import { useNavigate } from 'react-router-dom';
 
 function Cart() {
-  let Cartdata = useCart();
-  let dispatch = useDispatchCart();
-  if (Cartdata.length === 0) {
-    return (
-      <div>
-        <div className='m-5 w-100 text-center fs-3'>The Cart is Empty!</div>
-      </div>
-    )
-  }
-
+  const cartData = useCart();
+  const dispatch = useDispatchCart();
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const handleCheckout = async () => {
-    let userEmail = localStorage.getItem("userEmail");
-    let accessToken = Cookies.get('access_token');
+    try {
+      if (loading || error) {
+        throw new Error("User data loading or error occurred.");
+      }
 
-    if (!userEmail || !accessToken) {
-      console.error("User email or access token is null or undefined.");
-      return;
-    }
-  
-    let orderDateTime = new Date().toLocaleString();
-    let response = await fetch("/api/listing/orderData", {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        'User-Email': userEmail,
-      },
-      body: JSON.stringify({
-        order_data: Cartdata,
-        email: userEmail,
-        order_date: orderDateTime,
-      }),
-    });
-  
-    if (response.status === 200) {
-      dispatch({ type: "DROP" });
+      const userEmail = currentUser.email;
+      const response = await fetch("/api/listing/orderData", { // Adjust the path here
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order_data: cartData,
+          email: userEmail,
+        }),
+      });
+
+      if (response.ok) {
+        dispatch({ type: "CLEAR" });
+        setIsPlacingOrder(true);
+        setTimeout(() => {
+          navigate("/order");
+        }, 2000);
+      } else {
+        throw new Error('Failed to place order');
+      }
+    } catch (error) {
+      console.error("Error during checkout:", error.message);
     }
   };
-  
 
-  let totalPrice = Cartdata.reduce((total, item) => total + item.price, 0)
+  let totalPrice = cartData.reduce((total, item) => total + item.price, 0);
 
   return (
     <div>
@@ -63,8 +61,8 @@ function Cart() {
             </tr>
           </thead>
           <tbody>
-            {Cartdata.map((item, index) => (
-              <tr key={item.id} className="text-center align-middle">
+            {cartData.map((item, index) => (
+              <tr key={index} className="text-center align-middle">
                 <td>{index + 1}</td>
                 <td><img className='w-[75px] h-[50px]' src={item.img} alt="img..." /></td>
                 <td>{item.name}</td>
@@ -76,13 +74,14 @@ function Cart() {
             ))}
           </tbody>
         </table>
-        <div><h1 className='fs-2'>Total Price:{totalPrice}/-</h1></div>
+        <div><h1 className='fs-2'>Total Price: ${totalPrice}</h1></div>
         <div>
-          <button className='btn bg-success mt-5' onClick={handleCheckout} >Check Out</button>
+          <button className='btn bg-success mt-5' onClick={handleCheckout} disabled={isPlacingOrder}>Check Out</button>
         </div>
+        {isPlacingOrder && <p>Placing order, please wait...</p>}
       </div>
     </div>
-  )
+  );
 }
 
-export default Cart
+export default Cart;
