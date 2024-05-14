@@ -13,30 +13,24 @@ function Cart() {
 
   const handleCheckout = async () => {
     try {
-      if (loading || error) {
-        throw new Error("User data loading or error occurred.");
-      }
-
-      const userEmail = currentUser.email;
-      const response = await fetch("/api/listing/orderData", { // Adjust the path here
-        method: 'POST',
+      const userEmail=currentUser.email;
+      let response = await fetch("/api/listing/orderData", {
+        method: 'post',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           order_data: cartData,
           email: userEmail,
-        }),
+          order_date: new Date().toDateString()
+        })
       });
-
-      if (response.ok) {
-        dispatch({ type: "CLEAR" });
+      if (response.status === 200) {
+        dispatch({ type: "DROP" });
         setIsPlacingOrder(true);
         setTimeout(() => {
           navigate("/order");
-        }, 2000);
-      } else {
-        throw new Error('Failed to place order');
+        }, 200);
       }
     } catch (error) {
       console.error("Error during checkout:", error.message);
