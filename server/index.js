@@ -22,6 +22,7 @@ mongoose.connect(process.env.MONGO, {
     const foodItemsCollection = db.collection('food-items');
     const foodCategoryCollection = db.collection('food-category');
 
+    const __dirname=path.resolve();
     // Use Promise.all to wait for both queries to resolve
     const [foodItemsData, foodCategoryData] = await Promise.all([
         foodItemsCollection.find({}).toArray(),
